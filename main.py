@@ -16,14 +16,13 @@ while True:
     imageFrame = img
     # imageFrame = cv2.imread("1.jpg")
 
-
     hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
     # grayFrame = cv2.cvtColor(imageFrame, cv2.COLOR_RGB2GRAY)
 
     # obtaining white mask
     # sensitivity = 15
-    white_lower = np.array([0, 0, 0], dtype=np.uint8)
-    white_upper = np.array([127, 96, 96], dtype=np.uint8)
+    white_lower = np.array([0, 0, 32], dtype=np.uint8)
+    white_upper = np.array([160, 136, 106], dtype=np.uint8)
     white_mask = cv2.inRange(hsvFrame, white_lower, white_upper)
 
     # test
@@ -45,21 +44,22 @@ while True:
         area = cv2.contourArea(contour)
         if index == 0:
             largest = area
-        if area > largest:
+        if area >= largest:
             largest = area
         else:
             index += 1
             continue
 
-        x, y, w, h = cv2.boundingRect(contour)
-        imageFrame = cv2.rectangle(imageFrame, (x, y),
-                                   (x + w, y + h),
-                                   (0, 0, 255), 2)
+        if area > 100000:
+            x, y, w, h = cv2.boundingRect(contour)
+            imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                       (x + w, y + h),
+                                       (0, 0, 255), 2)
 
-        cv2.putText(imageFrame, "Arena", (x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                    (0, 0, 255))
-        index += 1
+            cv2.putText(imageFrame, "Arena", (x, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                        (0, 0, 255))
+            index += 1
 
         # if area > 300:
         #     x, y, w, h = cv2.boundingRect(contour)
@@ -76,9 +76,9 @@ while True:
 
     # Program Termination
     # cv2.imshow("Gray", grayFrame)
-    cv2.imshow("white mask dilated", white_mask)
-    cv2.imshow("bit wise anded", white_mask)
-    cv2.imshow("HSV", hsvFrame)
+    # cv2.imshow("white mask dilated", white_mask)
+    # cv2.imshow("bit wise anded", white_mask)
+    # cv2.imshow("HSV", hsvFrame)
     cv2.imshow("BGR", imageFrame)
 
     if cv2.waitKey(10) & 0xFF == ord('q'):
